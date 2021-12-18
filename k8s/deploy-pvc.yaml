@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: demo
+    version: v1
+  name: demo
+  namespace: prod
+spec:
+  progressDeadlineSeconds: 600 #10分钟之内没有完成，则升级失败
+  replicas: 2
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: demo
+      version: v1
+  strategy:
+    rollingUpdate:
+      maxSurge: 1 #最多允许超出的pod实例的数量
+      maxUnavailable: 0 #相对于期望副本数能够允许有多少pod实例处于不可用状态。设为0确保升级过程中，pod被挨个替换
+    type: RollingUpdate #滚动升级
+  minReadySeconds: 180 #新创建的pod至少要成功运行3分钟，才能将其视为可用
+  template:
+    metadata:
+      labels:
+        app: demo
+        version: v1
+    spec:
+      volumes:
+        - name: demo-data
+          persistentVolumeClaim:
+            claimName: demo
+      volumeMounts:
+        - name: demo-data
+          mountPath: /home
+      containers:
+        - name: demo
+          ports:
+            - name: http
+              containerPort: 8080
+          image: jack80342/demo:1.0
+          imagePullPolicy: Always
+          envFrom:
+            - configMapRef:
+                name: demo
+          resources:
+            requests:
+              cpu: 200m
+          startupProbe:
+            initialDelaySeconds: 10 #在第一次探测前的等待时间（单位：秒）
+            failureThreshold: 3 #失败阀值
+            timeoutSeconds: 1 #超时时间
+            periodSeconds: 10 #每隔10秒执行一次
+            httpGet:
+              port: http
+              path: /actuator/health
+          readinessProbe:
+            initialDelaySeconds: 10
+            httpGet:
+              port: http
+              path: /actuator/health
+          livenessProbe:
+            initialDelaySeconds: 10
+            httpGet:
+              port: http
+              path: /actuator/health
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                  - sh
+                  - -c
+                  - "sleep 5"

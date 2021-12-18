@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: demo
+  namespace: prod
+data:
+  ENV_TYPE: "prod"
+  BASE_URL: "http://zipkin:9411/"
