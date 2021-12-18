@@ -33,6 +33,9 @@ spec:
               containerPort: 8080
           image: jack80342/demo:1.0
           imagePullPolicy: IfNotPresent
+          resources:
+            requests:
+              cpu: 200m
           startupProbe:
             initialDelaySeconds: 10 #在第一次探测前的等待时间（单位：秒）
             failureThreshold: 3 #失败阀值

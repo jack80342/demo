@@ -1,0 +1,19 @@
+apiVersion: autoscaling/v2beta2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: demo
+  namespace: prod
+spec:
+  minReplicas: 2
+  maxReplicas: 3
+  metrics:
+    - resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 80 #让Autoscaler调整pod数量以使每个pod都使用所请求CPU的80%
+      type: Resource
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: demo
