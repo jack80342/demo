@@ -38,7 +38,7 @@ spec:
               cpu: 200m
           startupProbe:
             initialDelaySeconds: 10 #在第一次探测前的等待时间（单位：秒）
-            failureThreshold: 3 #失败阀值
+            failureThreshold: 3 #失败阈值
             timeoutSeconds: 1 #超时时间
             periodSeconds: 10 #每隔10秒执行一次
             httpGet:
