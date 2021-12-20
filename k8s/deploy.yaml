@@ -32,7 +32,7 @@ spec:
             - name: http
               containerPort: 8080
           image: jack80342/demo:1.0
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           resources:
             requests:
               cpu: 200m
